@@ -5,6 +5,9 @@ import delimited "G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\Price Syn
 
 cd "D:\Dropbox\Finance(Prof.Heidari-Aghajanzadeh)\Project\Price-Synchronocity\report"
 
+drop if year == 1399
+
+
 gen SYNCH = log(rsquared / (1-rsquared))
 
 label variable SYNCH "SYNCH"

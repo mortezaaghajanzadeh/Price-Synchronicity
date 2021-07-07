@@ -1,0 +1,154 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{comment}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{dcolumn}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\linespread{1.5}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{tikz}
+\usepackage[title]{appendix}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{datatool}
+\hypersetup{
+	colorlinks=false,
+	linkcolor=black,
+	filecolor=black,      
+	urlcolor=black,
+	citecolor = blue
+}
+
+\usepackage{natbib}
+\usepackage{xepersian}
+\settextfont{XB Zar}
+\setdigitfont{XB Zar}
+
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+
+\title{مالکان نهایی و هم‌زمانی بازده شرکت با بازار}
+%\subtitle{}
+\author{
+	مرتضی آقاجان‌زاده
+	 \sym{*} 
+	\qquad 
+	مهدی حیدری 
+	\sym{*} 
+	 \\
+	\sym{*} 
+	\footnotesize  موسسه مطالعات پیشرفته تهران (تیاس) - دانشگاه خاتم
+}
+
+\date{
+تیر 1400}
+
+
+
+
+\begin{document}
+
+\maketitle
+
+\section{مقدمه}
+\section{پیشینه پژوهش}
+\section{روش‌شنای پژوهش}
+\subsection{هم‌زمانی بازده شرکت}
+معولا در ادبیات هم‌زمانی بازده شرکت را با ضریب تعیین برآورد خطی بازده شرکت بر روی بازده بازار و صنعت شرکت محاسبه می‌کنند. هر آنچه یک شرکت دارای ضریب تعیین بالاتری باشد، بازده شرکت با بازده بازار و یا صعنت هم زمانی بالاتری دارد. 
+با توجه به مقاله 
+پیتروسکی و رولستون (2004)
+%\lr{\cite{piotroski2004influence} }
+به منظور بدست آوردن هم زمانی قیمت سهام، معادله زیر را برای هر شرکت به صورت سالانه برازش می‌کنیم:
+	\begin{equation}\label{e1}
+		RET_{i,w} = \alpha + \beta_1 MKRET_{w}+ \beta_2 MKRET_{w-1}  + \beta_3 INDRET_{i,w} + \beta_4 INDRET_{i,w-1} 
+	\end{equation}
+	که در این معادله 
+	\lr{$ RET_{i,w} $}
+	بازده هفتگی شرکت i در هفته w، 
+	\lr{$ MKRET_{w} $}
+	بازده بازار برای هفته w و
+	\lr{$ INDRET_{i,w} $}
+	بازه صنعت شرکت در هفته w می‌باشد که بازده شرکت مورد بررسی از آن کم شده‌است. 
+	
+	ضریب تعیین بدست آمده از برازش فوق عددیدر بازه یک و منفی یک می‌باشد به همین علت نمی‌توانیم از آن به صورت مستقیم در برآورد‌های آینده استفاده کنیم. به همین منظور از تبدیل لاجستیک استفاده می‌کنیم. در نتیجه متغیر اصلی هم‌زمانی بازده شرکت برابر است با 	
+	\begin{equation}
+		SYNCH_{i,t} = log(\frac{R^2_{i,t}}{1-R^2_{i,t}})
+	\end{equation}
+که در این عبارت $  R^2_{i,t}$ ضریب تعیین بدست آمده از برازش معادله 
+\ref{e1}
+برای شرکت
+ \lr{i}
+  و در سال
+ \lr{ t}
+  می‌باشد. در شکل
+  \ref{fig:synchtimeseries} 
+  سری زمانی هم‌زمانی بازده شرکت‌ها رسم شده‌است.
+  
+  \begin{figure}[htbp]
+  	\centering
+  	\includegraphics[width=0.85\linewidth]{SYNCHtimeSeries}
+  	\caption{سری زمانی متوسط هم‌زمانی بازده شرکت‌ها }
+  	\label{fig:synchtimeseries}
+  \end{figure}
+  
+\section{یافته‌های پژوهش}
+\section{نتیجه‌گیری و پیشنهاد‌ها}
+
+
+	\begin{itemize}
+		\item $ \text{Excess} = (\text{cr} - \text{cfr})/\text{cr} $
+		\item $ \text{ExcessDiff} = \text{cr} - \text{cfr} $
+		\item $ \text{ExcessDummy} = \left\{\begin{array}{ll}
+			1 & \text{cr} - \text{cfr}>0\\
+			0 & \text{cr} - \text{cfr}\leq 0
+		\end{array}\right.  $
+	\item $ \text{ExcessHigh} = \left\{\begin{array}{ll}
+		1 & \text{Excess}>\text{Median}(\text{Excess})\\
+		0 & \text{Excess}\leq \text{Median}(\text{Excess})
+	\end{array}\right.  $
+	\end{itemize}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{t4}
+	\label{fig:t4}
+\end{figure}
+
+			\begin{table}[htbp]
+	\centering
+	\resizebox{0.75\textheight}{!}{
+		\input{synchronicityt4.tex}
+		\label{tab:synchronicityt4}	
+	}
+\end{table}
+
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\linewidth]{t5}
+		\label{fig:t5}
+	\end{figure}
+
+	\begin{table}[htbp]
+		\centering
+		\resizebox{0.75\textheight}{!}{
+			\input{synchronicityt5.tex}
+			\label{tab:synchronicityt5}	
+		}
+	\end{table}
+
+	{		
+	\bibliographystyle{apalike}
+	\bibliography{Ref}
+}
+\end{document}
