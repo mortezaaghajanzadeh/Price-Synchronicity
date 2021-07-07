@@ -12,6 +12,7 @@ df["Grouped"] = 1
 df.loc[df.uo.isnull(), "Grouped"] = 0
 df = df[df.year<1399]
 df['size'] = ln(df['size'])
+df['liquidity'] = ln(df['liquidity'])
 #%%
 fig = plt.figure(figsize=(8, 4))
 g = sns.lineplot(data=df, x="year", y="SYNCH")
@@ -29,13 +30,14 @@ plt.savefig(pathS + "\\SYNCHtimeSeries.png", bbox_inches="tight")
 #
 # %%
 mlist = [
+    'SYNCH',
     'Rsquared',
     'cfr',
     'cr',
     'volatility',
     'liquidity',
     'size',
-    'SYNCH',
+    
 ]
 df[~(df.uo.isnull())][mlist].describe().T
 # %%

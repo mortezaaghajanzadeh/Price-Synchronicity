@@ -56,7 +56,7 @@ estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
 
-esttab v0 v1 v2 v3 v4 v5, s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size) nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt4.tex ,replace
+esttab v0 v1 v2 v3 v4 v5, s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) brackets order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size) nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt4.tex ,replace
  
  
 xtset id year
@@ -87,5 +87,7 @@ estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
 
-esttab v0 v1 v2 v3 v4 v5, s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size)  nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt5.tex ,replace
+esttab v0 v1 v2 v3 v4 v5, brackets s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size)  nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt5.tex ,replace
+
+help esttab
  

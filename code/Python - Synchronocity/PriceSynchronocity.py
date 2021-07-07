@@ -42,6 +42,8 @@ df["yearWeek"] = df.year_of_year + "-" + df.week_of_year
 df = df[~((df.title.str.startswith("ح")) & (df.name.str.endswith("ح")))]
 df = df[~(df.name.str.endswith("پذيره"))]
 df = df[~(df.group_name == "زراعت و خدمات وابسته")]
+df = df[~(df.group_name == "صندوق سرمايه گذاري قابل معامله")]
+	
 #%%
 gdf = pd.read_parquet(path + "Stocks_Prices_1399-09-12.parquet")[
     ["group_id", "group_name"]
@@ -288,13 +290,15 @@ mapdict = dict(zip(groupname.name, groupname.group_id))
 data["group_id"] = data.name.map(mapdict)
 #%%
 sdf = pd.read_csv(path + "SymbolShrout.csv")
-sdf = sdf.set_index(["date", "symbol"])
+sdf['year'] = round(sdf.jalaliDate/10000)
+sdf['year'] = sdf['year'].astype(int)
+sdf = sdf.set_index(["year", "symbol"])
 mapdict = dict(zip(sdf.index, sdf.shrout))
-pdf = df[["name", "date", "close_price", "year"]].drop_duplicates(
+pdf = df[["name", "close_price", "year"]].drop_duplicates(
     subset=["name", "year"]
 )
-pdf["date"] = pdf.date.astype(int)
-pdf["shrout"] = pdf.set_index(["date", "name"]).index.map(mapdict)
+pdf["year"] = pdf.year.astype(int)
+pdf["shrout"] = pdf.set_index(["year", "name"]).index.map(mapdict)
 pdf["size"] = pdf.close_price * pdf.shrout
 pdf
 #%%

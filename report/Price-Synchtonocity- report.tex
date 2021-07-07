@@ -32,9 +32,9 @@
 
 \usepackage{natbib}
 \usepackage{xepersian}
-\settextfont{XB Zar}
+\settextfont{XB Niloofar}
 \setdigitfont{XB Zar}
-
+\newcommand{\paren}[1]{\scaleleftright[3cm]{\text{)}}{#1}{\text{(}}}
 \def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
 
 \title{مالکان نهایی و هم‌زمانی بازده شرکت با بازار}
@@ -92,7 +92,8 @@
  \lr{ t}
   می‌باشد. در شکل
   \ref{fig:synchtimeseries} 
-  سری زمانی هم‌زمانی بازده شرکت‌ها رسم شده‌است.
+  سری زمانی هم‌زمانی بازده برای تمامی شرکت‌های حاضر در بازار رسم شده‌است.
+  
   
   \begin{figure}[htbp]
   	\centering
@@ -101,54 +102,86 @@
   	\label{fig:synchtimeseries}
   \end{figure}
   
+  پس از محاسبه هم‌زمانی بازده شرکت‌ها تاثیر اختلاف حق رای و حق جریان مالی شرکت‌ بر روی هم‌زمانی بازده را با برازش مدل زیر بررسی می‌کنیم:
+  \begin{equation}\label{e2}
+  	\begin{split}
+  		\text{SYNCH}_{i,t} =&  \beta_0 + \beta_1 \text{Excess}_{i,t} + \beta_2 \text{UCF}_{i,t} \\
+  		& + \sum_{k} \beta_k \text{Control}_{i,t}^k + \text{IndustryDummies} + \text{YearDummies} + \varepsilon_{i,t}
+  	\end{split}
+  \end{equation}
+در مدل فوق عبارات i و t به ترتیب شرکت و سال را نمایندگی می‌کنند. در این مدل منظور از 
+$ \text{Excess} $
+پراکسی از اختلاف مالکیت و حق جریان مالی است که در چهار حالت تعریف می‌شود که عبارتند از اختلاف حق کنترل از جریان مالی  که با میزان حق رای اسکیل شده است که با 
+$ \text{Excess} $
+ نشان می‌دهیم.
+($ \text{Excess} = (\text{cr} - \text{cfr})/\text{cr}$)  
+حالت دوم این متغیر میزان اختلاف حق کنترل از حق جریان مالی می‌باشد که با 
+$ \text{ExcessDiff} $
+نشان داده می‌شود. دو حالت دیگر نیز دو متغیر مجازی است که چنانچه این اختلاف مثبت باشد مقدار یک به خود می‌گیرد و در غیر این صورت برابر صفر است 
+ ($ \text{ExcessDummy} $)
+و یا چنانچه مقدار این اختلاف از میانه این متغیر در نمونه بیشتر باشد برابر یک می‌شود و در غیر این صورت برابر صفر است.
+ ($ \text{ExcessHigh} $)
+$ \text{UCF} $ 
+نیز حق جریان مالی مالک نهایی شرکت است. 
+
+با توجه به تاثیر ویژگی‌های شرکت بر روی هم‌زمانی بازده شرکت، نیاز است تا ویژگی‌های شرکت نیز کنترل شود. از این روز با توجه به ادبیات از متغیر‌های نوسان بازده سهام، نقدشوندگی و اندازه استفاده شده‌است. 
+در مدل فوق علاوه بر استفاده از اثر‌های ثابت سال و صنعت از کنترل شرکت نیز استفاده شده است. مشخصات آماری متغیر‌های کنترل و وابسته در جدول 
+\ref{Controlsummary}
+نشان داده شده‌است.
+
+  
+  
+		\begin{table}[htbp]
+  	\centering
+  	\caption{خلاصه آماری متغیر‌های وابسته و کنترل}
+  	\label{tab:Controlsummary}	
+  	\begin{LTR}
+  	\resizebox{0.75\textwidth}{!}{
+  		\input{Controlsummary.tex}
+  	}
+  \end{LTR}
+  	
+
+    \end{table}
+
+
+
+
+  
+  
 \section{یافته‌های پژوهش}
-\section{نتیجه‌گیری و پیشنهاد‌ها}
 
 
-	\begin{itemize}
-		\item $ \text{Excess} = (\text{cr} - \text{cfr})/\text{cr} $
-		\item $ \text{ExcessDiff} = \text{cr} - \text{cfr} $
-		\item $ \text{ExcessDummy} = \left\{\begin{array}{ll}
-			1 & \text{cr} - \text{cfr}>0\\
-			0 & \text{cr} - \text{cfr}\leq 0
-		\end{array}\right.  $
-	\item $ \text{ExcessHigh} = \left\{\begin{array}{ll}
-		1 & \text{Excess}>\text{Median}(\text{Excess})\\
-		0 & \text{Excess}\leq \text{Median}(\text{Excess})
-	\end{array}\right.  $
-	\end{itemize}
+	
 
-\begin{figure}
+
+
+
+\lr{				\begin{table}[htbp]
 	\centering
-	\includegraphics[width=0.9\linewidth]{t4}
-	\label{fig:t4}
-\end{figure}
-
-			\begin{table}[htbp]
-	\centering
-	\resizebox{0.75\textheight}{!}{
+	\resizebox{0.75\textwidth}{!}{
 		\input{synchronicityt4.tex}
 		\label{tab:synchronicityt4}	
 	}
-\end{table}
+\end{table}}
 
 
-	\begin{figure}
+
+ 
+\lr{	\begin{table}[htbp]
 		\centering
-		\includegraphics[width=0.9\linewidth]{t5}
-		\label{fig:t5}
-	\end{figure}
-
-	\begin{table}[htbp]
-		\centering
-		\resizebox{0.75\textheight}{!}{
+		\resizebox{0.75\textwidth}{!}{
 			\input{synchronicityt5.tex}
 			\label{tab:synchronicityt5}	
 		}
-	\end{table}
+	\end{table}}
 
-	{		
+
+
+\section{نتیجه‌گیری و پیشنهاد‌ها}
+
+\begin{LTR}		
 	\bibliographystyle{apalike}
 	\bibliography{Ref}
-}
+\end{LTR}
 \end{document}
