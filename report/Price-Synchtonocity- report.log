@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.5.13)  10 JUL 2021 17:02
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.5.13)  10 JUL 2021 20:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1306,12 +1306,12 @@ Overfull \hbox (24.40012pt too wide) in paragraph at lines 224--229
 LaTeX Warning: Float too large for page by 37.36739pt on input line 229.
 
 (./synchronicityt5.tex)
-Overfull \hbox (24.41261pt too wide) in paragraph at lines 243--244
+Overfull \hbox (24.41663pt too wide) in paragraph at lines 243--244
  [][][][][] 
  []
 
 
-LaTeX Warning: Float too large for page by 44.45702pt on input line 244.
+LaTeX Warning: Float too large for page by 48.67491pt on input line 244.
 
 [6] [7] [8] (./Price-Synchtonocity- report.bbl) [9]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 255.
@@ -1326,11 +1326,11 @@ hanged.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 255.
  ) 
 Here is how much of TeX's memory you used:
- 28365 strings out of 479418
- 562047 string characters out of 5888105
+ 28369 strings out of 479418
+ 562237 string characters out of 5888105
  959482 words of memory out of 5000000
- 45204 multiletter control sequences out of 15000+600000
- 538323 words of font info for 121 fonts, out of 8000000 for 9000
+ 45206 multiletter control sequences out of 15000+600000
+ 538339 words of font info for 123 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  60i,17n,77p,4848b,395s stack positions out of 5000i,500n,10000p,200000b,80000s
 

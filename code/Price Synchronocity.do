@@ -33,6 +33,9 @@ drop med
 
 gen leverage = debt/bookvalue
 
+replace centrality = log(centrality) - log(1-centrality) 
+
+label variable centrality " $ \ln(\frac{\text{centrality}}{1-\text{centrality}}) $"
 replace noind = log(noind)
 label variable noind " $ \ln(NIND) $"
 
