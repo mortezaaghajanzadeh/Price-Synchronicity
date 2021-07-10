@@ -2,7 +2,7 @@
 from numpy.core.arrayprint import _make_options_dict
 import pandas as pd
 import statsmodels.api as sm
-
+import re as ree
 
 def addDash(row):
     row = str(row)
@@ -26,6 +26,27 @@ def year(row):
     X = row.split("-")
     return int(X[0])
 
+def convert_ar_characters(input_str):
+
+    mapping = {
+        "ك": "ک",
+        "گ": "گ",
+        "دِ": "د",
+        "بِ": "ب",
+        "زِ": "ز",
+        "ذِ": "ذ",
+        "شِ": "ش",
+        "سِ": "س",
+        "ى": "ی",
+        "ي": "ی",
+    }
+    return _multiple_replace(mapping, input_str)
+
+
+def _multiple_replace(mapping, text):
+    pattern = "|".join(map(ree.escape, mapping.keys()))
+    return ree.sub(pattern, lambda m: mapping[m.group()], str(text))
+
 
 #%%
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\\"
@@ -43,7 +64,7 @@ df = df[~((df.title.str.startswith("ح")) & (df.name.str.endswith("ح")))]
 df = df[~(df.name.str.endswith("پذيره"))]
 df = df[~(df.group_name == "زراعت و خدمات وابسته")]
 df = df[~(df.group_name == "صندوق سرمايه گذاري قابل معامله")]
-	
+
 #%%
 gdf = pd.read_parquet(path + "Stocks_Prices_1399-09-12.parquet")[
     ["group_id", "group_name"]
@@ -201,10 +222,9 @@ def BG(df):
     BG["BGId"] = BG["uo"].map(mapingdict)
 
     tt = BG[BG.year == 1397]
-    tt["year"] = 1398
 
     BG = BG.groupby(["uo", "year"]).filter(lambda x: x.shape[0] > 3)
-    for i in ["uo", "cfr", "cr"]:
+    for i in ["uo", "cfr", "cr", "position", "centrality"]:
         print(i)
         fkey = zip(list(BG.symbol), list(BG.year))
         mapingdict = dict(zip(fkey, BG[i]))
@@ -290,21 +310,50 @@ mapdict = dict(zip(groupname.name, groupname.group_id))
 data["group_id"] = data.name.map(mapdict)
 #%%
 sdf = pd.read_csv(path + "SymbolShrout.csv")
-sdf['year'] = round(sdf.jalaliDate/10000)
-sdf['year'] = sdf['year'].astype(int)
+sdf["year"] = round(sdf.jalaliDate / 10000)
+sdf["year"] = sdf["year"].astype(int)
+col = "symbol"
+sdf[col] = sdf[col].apply(lambda x: convert_ar_characters(x))
 sdf = sdf.set_index(["year", "symbol"])
 mapdict = dict(zip(sdf.index, sdf.shrout))
-pdf = df[["name", "close_price", "year"]].drop_duplicates(
-    subset=["name", "year"]
-)
+col = "name"
+df[col] = df[col].apply(lambda x: convert_ar_characters(x))
+pdf = df[["name", "close_price", "year"]].drop_duplicates(subset=["name", "year"])
 pdf["year"] = pdf.year.astype(int)
 pdf["shrout"] = pdf.set_index(["year", "name"]).index.map(mapdict)
 pdf["size"] = pdf.close_price * pdf.shrout
-pdf
-#%%
+col = "name"
+data[col] = data[col].apply(lambda x: convert_ar_characters(x))
 fkey = zip(pdf.name, pdf.year)
 mapdict = dict(zip(fkey, pdf["size"]))
 data["size"] = data.set_index(["name", "year"]).index.map(mapdict)
+#%%
+n2 = path + "balance sheet - 9811" + ".xlsx"
+df2 = pd.read_excel(n2)
+df2 = df2.iloc[:, [0, 4, 13, -9]]
+df2.rename(
+    columns={
+        df2.columns[0]: "symbol",
+        df2.columns[1]: "Year",
+        df2.columns[2]: "BookValue",
+        df2.columns[3]: "Debt",
+    },
+    inplace=True,
+)
+def vv5(row):
+    X = row.split("/")
+    return int(X[0])
+df2["Year"] = df2["Year"].apply(vv5)
+col = "symbol"
+df2[col] = df2[col].apply(lambda x: convert_ar_characters(x))
+for i in ['BookValue','Debt'] :
+    print(i)
+    mapdict = dict(zip(df2.set_index(['symbol','Year']).index,df2[i]))
+    data[i] = data.set_index(['name','year']).index.map(mapdict)
+#%%
+nind = data.groupby(['year','group_id']).size().to_frame()
+mapdict = dict(zip(nind.index,nind[0]))
+data['noind'] = data.set_index(['year','group_id']).index.map(mapdict)
 #%%
 mlist = data.name.unique()
 mapdict = dict(zip(mlist, range(len(mlist))))

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.5.13)  7 JUL 2021 18:45
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.5.13)  10 JUL 2021 17:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1287,38 +1287,51 @@ Overfull \hbox (16.9809pt too wide) detected at line 74
 File: SYNCHtimeSeries.png Graphic file (type bmp)
 <SYNCHtimeSeries.png>
  [2]
+Overfull \hbox (3.83304pt too wide) in paragraph at lines 131--137
+[][]\TU/lmroman10-regular(0)/m/n/12 (Amihud)[]\TU/XBNiloofar(0)/m/n/12 ، نسبت ا
+هرمی، اندازه شرکت و تعداد عضو صنعت شرکت استفاده شده‌است. مشخصات[]
+ []
 
-LaTeX Warning: Reference `Controlsummary' on page 3 undefined on input line 129
-.
-
-(./ControlSummary.tex) (./synchronicityt4.tex
+(./ControlSummary.tex) (./CorrelationTable.tex) [3] [4] [5]
+(./synchronicityt4.tex
 LaTeX Font Info:    Font shape `TU/XBZar(1)/bx/n' in size <5> not available
-(Font)              Font shape `TU/XBZar(1)/b/n' tried instead on input line 38
+(Font)              Font shape `TU/XBZar(1)/b/n' tried instead on input line 50
 .
-) (./synchronicityt5.tex)
-(./Price-Synchtonocity- report.bbl [3] [4] [5]) [6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 187.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 187.
+)
+Overfull \hbox (24.40012pt too wide) in paragraph at lines 224--229
+ [][][][][][] 
+ []
+
+
+LaTeX Warning: Float too large for page by 37.36739pt on input line 229.
+
+(./synchronicityt5.tex)
+Overfull \hbox (24.41261pt too wide) in paragraph at lines 243--244
+ [][][][][] 
+ []
+
+
+LaTeX Warning: Float too large for page by 44.45702pt on input line 244.
+
+[6] [7] [8] (./Price-Synchtonocity- report.bbl) [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 255.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 255.
 
 (./Price-Synchtonocity- report.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 187.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 187.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 255.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 255.
 Package rerunfilecheck Info: File `"Price-Synchtonocity- report".out' has not c
 hanged.
 (rerunfilecheck)             Checksum: <no file>.
-
-
-LaTeX Warning: There were undefined references.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 187.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 255.
  ) 
 Here is how much of TeX's memory you used:
- 28362 strings out of 479418
- 562040 string characters out of 5888105
- 948482 words of memory out of 5000000
- 45203 multiletter control sequences out of 15000+600000
- 538331 words of font info for 122 fonts, out of 8000000 for 9000
+ 28365 strings out of 479418
+ 562047 string characters out of 5888105
+ 959482 words of memory out of 5000000
+ 45204 multiletter control sequences out of 15000+600000
+ 538323 words of font info for 121 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 60i,17n,77p,4848b,471s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,17n,77p,4848b,395s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on Price-Synchtonocity- report.pdf (6 pages).
+Output written on Price-Synchtonocity- report.pdf (9 pages).

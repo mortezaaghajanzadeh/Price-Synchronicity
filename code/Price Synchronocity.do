@@ -8,7 +8,8 @@ cd "D:\Dropbox\Finance(Prof.Heidari-Aghajanzadeh)\Project\Price-Synchronocity\re
 drop if year == 1399
 
 
-gen SYNCH = log(rsquared / (1-rsquared))
+
+gen SYNCH = log(rsquared) - log(1-rsquared)
 
 label variable SYNCH "SYNCH"
 
@@ -30,64 +31,89 @@ replace ExcessHigh = 1 if Excess>med
 
 drop med
 
-eststo v0 : quietly regress SYNCH cfr volatility liquidity size i.group_id i.yea ,cluster(name)
+gen leverage = debt/bookvalue
+
+replace noind = log(noind)
+label variable noind " $ \ln(NIND) $"
+
+eststo v0 : quietly regress SYNCH  volatility liquidity size leverage noind  i.group_id i.yea if noind>1 ,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
-eststo v1 : quietly regress SYNCH Excess cfr size i.group_id i.year ,cluster(name)
+eststo v1 : quietly regress SYNCH Excess cfr  i.group_id i.year if noind>1,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
-eststo v2 : quietly regress SYNCH Excess cfr volatility liquidity size i.group_id i.year ,cluster(name)
+eststo v2 : quietly regress SYNCH Excess cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
-eststo v3 : quietly regress SYNCH ExcessDiff cfr volatility liquidity size i.group_id i.year ,cluster(name)
+eststo v3 : quietly regress SYNCH ExcessDiff cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
-eststo v4 : quietly regress SYNCH ExcessDummy cfr volatility liquidity size i.group_id i.year ,cluster(name)
-estadd loc IndustryDummy "Yes" , replace
-estadd loc YearDummy "Yes" , replace
-
-
-eststo v5 : quietly regress SYNCH ExcessHigh cfr volatility liquidity size i.group_id i.year ,cluster(name)
+eststo v4 : quietly regress SYNCH ExcessDummy cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
 
 
-esttab v0 v1 v2 v3 v4 v5, s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) brackets order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size) nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt4.tex ,replace
+eststo v5 : quietly regress SYNCH ExcessHigh cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "Yes" , replace
+
+eststo v6 : quietly regress SYNCH position cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "Yes" , replace
+
+eststo v7 : quietly regress SYNCH centrality cfr volatility liquidity size leverage noind i.group_id i.year if noind>1,cluster(name)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "Yes" , replace
+
+
+ 
+
+esttab v0 v1 v2 v3 v4 v5 v6 v7, label s(IndustryDummy YearDummy N  r2 ,   lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) brackets order(Excess  ExcessDiff ExcessDummy ExcessHigh position centrality cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess position centrality cfr volatility liquidity size leverage noind) nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt4.tex ,replace
  
  
 xtset id year
   
- eststo v0 : quietly xi: asreg SYNCH volatility liquidity size i.group_id   , fmb newey(4)
+ eststo v0 : quietly  xi: asreg SYNCH volatility liquidity size leverage noind i.group_id  if noind>1 , fmb newey(4)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
- eststo v1 : quietly xi: asreg SYNCH Excess cfr  size i.group_id  , fmb newey(4)
+ eststo v1 : quietly xi: asreg SYNCH Excess cfr   i.group_id  if noind>1, fmb newey(4)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
-  eststo v2 : quietly xi: asreg SYNCH Excess cfr volatility liquidity size i.group_id  , fmb newey(4)
+  eststo v2 : quietly xi: asreg SYNCH Excess cfr volatility liquidity size leverage noind i.group_id  if noind>1, fmb newey(4)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
-eststo v3 : quietly xi: asreg SYNCH ExcessDiff cfr volatility liquidity size i.group_id , fmb newey(4)
+eststo v3 : quietly xi: asreg SYNCH ExcessDiff cfr volatility liquidity size leverage noind i.group_id if noind>1, fmb newey(4)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
-eststo v4 : quietly xi: asreg SYNCH ExcessDummy cfr volatility liquidity size i.group_id  , fmb newey(4)
-estadd loc IndustryDummy "Yes" , replace
-estadd loc YearDummy "No" , replace
-
-
-eststo v5 : quietly xi: asreg SYNCH ExcessHigh cfr volatility liquidity size i.group_id  , fmb newey(4)
+eststo v4 : quietly xi: asreg SYNCH ExcessDummy cfr volatility liquidity size leverage noind i.group_id  if noind>1, fmb newey(4)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "No" , replace
 
 
-esttab v0 v1 v2 v3 v4 v5, brackets s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess cfr volatility liquidity size)  nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt5.tex ,replace
+eststo v5 : quietly xi: asreg SYNCH ExcessHigh cfr volatility liquidity size leverage noind i.group_id  if noind>1, fmb newey(4)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "No" , replace
 
-help esttab
+
+eststo v6 : quietly xi: asreg SYNCH position cfr volatility liquidity size leverage noind i.group_id  if noind>1, fmb newey(4)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "No" , replace
+
+
+eststo v7 : quietly xi: asreg SYNCH centrality cfr volatility liquidity size leverage noind i.group_id  if noind>1, fmb newey(4)
+estadd loc IndustryDummy "Yes" , replace
+estadd loc YearDummy "No" , replace
+
+
+esttab v0 v1 v2 v3 v4 v5 v6 v7, brackets label s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh position centrality cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess position centrality cfr volatility liquidity size leverage noind)  nomtitle mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt5.tex ,replace
+
+corr SYNCH rsquared cfr cr position volatility centrality liquidity size  Excess ExcessDiff ExcessDummy ExcessHigh leverage
  
