@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.5.13)  6 JUL 2021 10:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.5.13)  10 JUL 2021 18:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1214,7 +1214,11 @@ Package pdftex.def Info: t4.png  used on input line 91.
 
 [4
 
- <./t4.png>] (./synchronicityt4.tex) [5
+ <./t4.png>] (./synchronicityt4.tex)
+Overfull \vbox (16.18306pt too high) detected at line 100
+ []
+
+[5
 
 ]
 <t5.png, id=176, 672.71326pt x 416.757pt>
@@ -1224,9 +1228,8 @@ Package pdftex.def Info: t5.png  used on input line 108.
 (pdftex.def)             Requested size: 308.06367pt x 190.85205pt.
  [6
 
- <./t5.png>]
-(./synchronicityt5.tex)
-Overfull \vbox (5.75284pt too high) detected at line 117
+ <./t5.png>] (./synchronicityt5.tex)
+Overfull \vbox (16.18306pt too high) detected at line 117
  []
 
 [7
@@ -1253,7 +1256,7 @@ anged.
 Here is how much of TeX's memory you used:
  25160 strings out of 480608
  487649 string characters out of 5907536
- 773963 words of memory out of 5000000
+ 783963 words of memory out of 5000000
  40387 multiletter control sequences out of 15000+600000
  545501 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1271,7 +1274,7 @@ s/cm/cmss8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9
 f-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmsy6.pfb><c:/texlive/2020/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmsy7.pfb>
-Output written on "Price-Synchtonocity- Slide.pdf" (7 pages, 311727 bytes).
+Output written on "Price-Synchtonocity- Slide.pdf" (7 pages, 312852 bytes).
 PDF statistics:
  284 PDF objects out of 1000 (max. 8388607)
  243 compressed objects within 3 object streams
