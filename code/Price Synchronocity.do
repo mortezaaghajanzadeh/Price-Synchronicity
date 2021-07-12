@@ -13,6 +13,8 @@ gen SYNCH = log(rsquared) - log(1-rsquared)
 
 label variable SYNCH "SYNCH"
 
+sum  SYNCH if year != 1398
+
 replace size = log(size)
 label variable size "Size"
 replace liquidity = log(liquidity)
