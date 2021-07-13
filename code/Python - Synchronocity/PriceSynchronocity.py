@@ -1,8 +1,35 @@
 #%%
 from numpy.core.arrayprint import _make_options_dict
+from numpy.lib.function_base import average
 import pandas as pd
 import statsmodels.api as sm
+# %%
+g['Residual'].skew()
+# %%
+from numpy import log as ln
 import re as ree
+
+
+def convert_ar_characters(input_str):
+
+    mapping = {
+        "ك": "ک",
+        "گ": "گ",
+        "دِ": "د",
+        "بِ": "ب",
+        "زِ": "ز",
+        "ذِ": "ذ",
+        "شِ": "ش",
+        "سِ": "س",
+        "ى": "ی",
+        "ي": "ی",
+    }
+    return _multiple_replace(mapping, input_str)
+
+
+def _multiple_replace(mapping, text):
+    pattern = "|".join(map(ree.escape, mapping.keys()))
+    return ree.sub(pattern, lambda m: mapping[m.group()], str(text))
 
 def addDash(row):
     row = str(row)
@@ -26,26 +53,6 @@ def year(row):
     X = row.split("-")
     return int(X[0])
 
-def convert_ar_characters(input_str):
-
-    mapping = {
-        "ك": "ک",
-        "گ": "گ",
-        "دِ": "د",
-        "بِ": "ب",
-        "زِ": "ز",
-        "ذِ": "ذ",
-        "شِ": "ش",
-        "سِ": "س",
-        "ى": "ی",
-        "ي": "ی",
-    }
-    return _multiple_replace(mapping, input_str)
-
-
-def _multiple_replace(mapping, text):
-    pattern = "|".join(map(ree.escape, mapping.keys()))
-    return ree.sub(pattern, lambda m: mapping[m.group()], str(text))
 
 
 #%%
@@ -64,6 +71,9 @@ df = df[~((df.title.str.startswith("ح")) & (df.name.str.endswith("ح")))]
 df = df[~(df.name.str.endswith("پذيره"))]
 df = df[~(df.group_name == "زراعت و خدمات وابسته")]
 df = df[~(df.group_name == "صندوق سرمايه گذاري قابل معامله")]
+df["year"] = df.jalaliDate.apply(year)
+df = df.groupby(["group_name", "year"]).filter(lambda x: x.shape[0] >= 2)
+
 
 #%%
 gdf = pd.read_parquet(path + "Stocks_Prices_1399-09-12.parquet")[
@@ -89,14 +99,13 @@ df["volume"] = df["volume"].astype(float)
 df["quantity"] = df["quantity"].astype(float)
 df["industry_index"] = df["industry_index"].astype(float)
 
-wdf = (
-    df.groupby(["name", "yearWeek"])
-    .last()
-    .reset_index()[
+gg = df.groupby(["name", "yearWeek"])
+wdf = gg.last()
+
+wdf = wdf[
         [
             "jalaliDate",
             "date",
-            "name",
             "title",
             "stock_id",
             "group_name",
@@ -105,11 +114,16 @@ wdf = (
             "volume",
             "quantity",
             "group_id",
-            "yearWeek",
             "industry_index",
         ]
     ]
-)
+for i in ["value","volume","quantity"]:
+    print(i)
+    tempt = gg[i].sum().to_frame()
+    mapdict = dict(zip(tempt.index,tempt[i]))
+    wdf[i] = wdf.index.map(mapdict)
+
+wdf = wdf.reset_index()
 wdf = wdf.drop(wdf[(wdf["name"] == "وقوام") & (wdf["close_price"] == 1000)].index)
 symbols = [
     "سپرده",
@@ -159,6 +173,7 @@ wdf = wdf.drop(
         & (wdf.volume < 1)
     ].index
 )
+wdf["year"] = wdf.jalaliDate.apply(year)
 #%%
 market = pd.read_excel(path + "IRX6XTPI0009.xls").rename(
     columns={"<DTYYYYMMDD>": "date", "<CLOSE>": "market_index"}
@@ -169,36 +184,121 @@ wdf["date"] = wdf.date.astype(float)
 mapdict = dict(zip(market["date"], market["market_index"]))
 wdf["market_index"] = wdf["date"].map(mapdict)
 # %%
+shrout = pd.read_csv(path + "SymbolShrout-Annual.csv")
+col = "name"
+wdf[col] = wdf[col].apply(lambda x: convert_ar_characters(x))
+mapdict = dict(zip(shrout.set_index(['symbol','year']).index,shrout.shrout))
+wdf['shrout'] = wdf.set_index(['name','year']).index.map(mapdict)
+
+#%%
+
+wdf = wdf[~wdf.shrout.isnull()]
+wdf['marketCap'] = wdf.close_price * wdf.shrout
+gg = wdf.groupby(['group_name','yearWeek'])
+
+g = gg.get_group(
+    (
+        'فلزات اساسي',
+        '2011-29'
+    )
+)
+
+def weight_ind(g):
+    return g/g.sum()
+
+wdf['weight_ind'] = gg.marketCap.apply(weight_ind)
+
+#%%
 wdf["return"] = wdf.groupby("name").close_price.pct_change()
 wdf["return_industry"] = wdf.groupby("name").industry_index.pct_change()
 wdf["return_market"] = wdf.groupby("name").market_index.pct_change()
+wdf["return_industry"]  = (wdf.return_industry - wdf.weight_ind*wdf['return'])/(1-wdf.weight_ind)
 wdf["lagReturn"] = wdf.groupby("name")["return"].shift()
 wdf["lagReturn_industry"] = wdf.groupby("name")["return_industry"].shift()
 wdf["lagReturn_market"] = wdf.groupby("name")["return_market"].shift()
-wdf["year"] = wdf.jalaliDate.apply(year)
+
 # %%
 
-gg = wdf[~wdf.return_industry.isnull()].groupby(["name", "year"])
-
+gg = wdf[(~wdf.market_index.isnull())&
+         (~wdf.industry_index.isnull())
+         ].groupby(["name", "year"])
+# g = gg.get_group((
+#     "آكنتور",
+#     1387))
 #%%
 def rCalculation(g):
     # print(g.name[0])
+    if len(g)<30:
+        return pd.DataFrame()
     y = "return"
     x = ["return_market", "lagReturn_market", "return_industry", "lagReturn_industry"]
     g = g.dropna()
     try:
         # Add a constant term like so:
         model = sm.OLS(g[y], sm.add_constant(g[x])).fit()
-        return model.rsquared
+        g['Rsquared'] = model.rsquared
+        g['Residual'] = model.resid
+        return g
     except:
-        return
+        return pd.DataFrame()
 
 
-data = gg.apply(rCalculation).to_frame().reset_index().rename(columns={0: "Rsquared"})
+data = gg.apply(rCalculation).reset_index(drop=True)
 
 
 # %%
+data['Firm_Specific_Return'] = ln(1+ data.Residual)
+gg = data.groupby(["name", "year"])
+g = gg.get_group((
+    "شستا",
+    1399))
+def crashCalculater(g,k):
+    std ,average = g.std(),g.mean()
+    return g.loc[(g < average - k*std)].size
 
+tempt = gg['Residual'].apply(
+    crashCalculater , k = 2
+    ).to_frame() 
+mapdict = dict(zip(tempt.index,tempt.Residual))
+data['NCrash'] = data.set_index(["name", "year"]).index.map(mapdict)
+#%%
+gg = data.groupby(["name", "year"])
+data2 = gg.last()
+data2['skew'] = gg.Firm_Specific_Return.skew()
+def kurtcal(g):
+    return g.kurt()
+data2['kurt'] = gg['Firm_Specific_Return'].apply(kurtcal)
+data2['return'] = gg['return'].sum()
+data2['return_market'] = gg['return_market'].sum()
+data2['return_industry_std'] = gg['return_industry'].std()
+data2['return_industry'] = gg['return_industry'].sum()
+data2 = data2.reset_index()
+data = data2[
+    [
+        'name',
+        'year',
+        'stock_id',
+        'group_name',
+        'close_price',
+        'value',
+        'volume',
+        'quantity',
+        'group_id',
+        'shrout',
+        'marketCap',
+        'weight_ind',
+        'return',
+        'return_industry',
+        'return_market',
+        'Rsquared',
+        'Firm_Specific_Return',
+        'NCrash',
+        'skew',
+        'kurt',
+        'return_industry_std'
+    ]
+]
+#%%
 
 def BG(df):
 
@@ -206,14 +306,12 @@ def BG(df):
     # pathBG = r"C:\Users\RA\Desktop\RA_Aghajanzadeh\Data\\"
     n = pathBG + "Grouping_CT.xlsx"
     BG = pd.read_excel(n)
-    uolist = (
-        BG[BG.listed == 1]
-        .groupby(["uo", "year"])
-        .filter(lambda x: x.shape[0] >= 3)
-        .uo.unique()
-    )
+
+
+    
     print(len(BG))
-    BG = BG[BG.uo.isin(uolist)]
+    BG =  BG[BG.listed == 1].groupby(["uo", "year"]
+                                     ).filter(lambda x: x.shape[0] >= 3)
     print(len(BG))
     BGroup = set(BG["uo"])
     names = sorted(BGroup)
@@ -221,7 +319,6 @@ def BG(df):
     mapingdict = dict(zip(names, ids))
     BG["BGId"] = BG["uo"].map(mapingdict)
 
-    tt = BG[BG.year == 1397]
 
     BG = BG.groupby(["uo", "year"]).filter(lambda x: x.shape[0] > 3)
     for i in ["uo", "cfr", "cr", "position", "centrality"]:
@@ -309,24 +406,7 @@ groupname = df[["name", "group_id"]].drop_duplicates()
 mapdict = dict(zip(groupname.name, groupname.group_id))
 data["group_id"] = data.name.map(mapdict)
 #%%
-sdf = pd.read_csv(path + "SymbolShrout.csv")
-sdf["year"] = round(sdf.jalaliDate / 10000)
-sdf["year"] = sdf["year"].astype(int)
-col = "symbol"
-sdf[col] = sdf[col].apply(lambda x: convert_ar_characters(x))
-sdf = sdf.set_index(["year", "symbol"])
-mapdict = dict(zip(sdf.index, sdf.shrout))
-col = "name"
-df[col] = df[col].apply(lambda x: convert_ar_characters(x))
-pdf = df[["name", "close_price", "year"]].drop_duplicates(subset=["name", "year"])
-pdf["year"] = pdf.year.astype(int)
-pdf["shrout"] = pdf.set_index(["year", "name"]).index.map(mapdict)
-pdf["size"] = pdf.close_price * pdf.shrout
-col = "name"
-data[col] = data[col].apply(lambda x: convert_ar_characters(x))
-fkey = zip(pdf.name, pdf.year)
-mapdict = dict(zip(fkey, pdf["size"]))
-data["size"] = data.set_index(["name", "year"]).index.map(mapdict)
+data = data.rename(columns = {'marketCap':'size'})
 #%%
 n2 = path + "balance sheet - 9811" + ".xlsx"
 df2 = pd.read_excel(n2)
@@ -359,7 +439,7 @@ mlist = data.name.unique()
 mapdict = dict(zip(mlist, range(len(mlist))))
 data["id"] = data.name.map(mapdict)
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\Price Synchronocity\\"
-data[(data.Rsquared >= -1) & (data.Rsquared < 1)].to_csv(
+data[(data.Rsquared < 1)].to_csv(
     path + "priceSynchronocity.csv", index=False
 )
 # %%
