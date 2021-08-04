@@ -1,0 +1,6 @@
+\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
+\beamer@sectionintoc {2}{Hypothesis development}{5}{0}{2}
+\beamer@sectionintoc {3}{Data and variable construction}{8}{0}{3}
+\beamer@sectionintoc {4}{Regression results}{12}{0}{4}
+\beamer@sectionintoc {5}{Conclusion}{19}{0}{5}
+\beamer@sectionintoc {6}{Iran's Data}{21}{0}{6}

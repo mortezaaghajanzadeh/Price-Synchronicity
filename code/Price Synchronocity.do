@@ -43,6 +43,15 @@ label variable centrality " $ \ln(\frac{\text{centrality}}{1-\text{centrality}})
 replace noind = log(noind)
 label variable noind " $ \ln(NIND) $"
 
+
+gen crash = 0
+
+replace crash = 1 if ncrash >0
+
+logit crash Excess  volatility liquidity size leverage noind return_market skew kurt return_industry_std  volumeratio   i.group_id i.year if noind>1 ,cluster(name)
+
+
+
 eststo v0 : quietly regress SYNCH  volatility liquidity size leverage noind return_market skew kurt return_industry_std  volumeratio   i.group_id i.year if noind>1 ,cluster(name)
 estadd loc IndustryDummy "Yes" , replace
 estadd loc YearDummy "Yes" , replace
@@ -126,4 +135,6 @@ estadd loc YearDummy "No" , replace
 esttab v0 v1 v2 v3 v4 v5 v6 v7, brackets label s(IndustryDummy YearDummy N  r2 ,  lab("Industry Dummy" "Year Dummy" "Observations""$ R^2 $")) order(Excess  ExcessDiff ExcessDummy ExcessHigh position centrality cfr) keep(ExcessDummy  ExcessHigh ExcessDiff Excess position centrality cfr volatility liquidity size leverage noind return_market skew kurt return_industry_std  volumeratio)  nomtitle 
 
 mgroups("Synchronicity"   , pattern(1 ) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span}) ) ,using synchronicityt5.tex ,replace
+
+
 

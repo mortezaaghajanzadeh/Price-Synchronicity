@@ -4,8 +4,6 @@ from numpy.lib.function_base import average
 import pandas as pd
 import statsmodels.api as sm
 # %%
-g['Residual'].skew()
-# %%
 from numpy import log as ln
 import re as ree
 
