@@ -1,2 +1,2 @@
-# Price-Synchronocity
+# Price-Synchronicity
  
