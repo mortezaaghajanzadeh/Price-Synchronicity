@@ -1,6 +1,5 @@
 cls
 clear
-// Osati and Aghajanzadeh
 import delimited "G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\Price Synchronocity\priceSynchronocity.csv", encoding(UTF-8) 
 
 
