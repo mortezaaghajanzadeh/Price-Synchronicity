@@ -56,7 +56,7 @@ def year(row):
 #%%
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\\"
 
-df = pd.read_parquet(path + "Stocks_Prices_1400-02-07.parquet")
+df = pd.read_parquet(path + "Cleaned_Stock_Prices_1400_06_16.parquet")
 df["date1"] = df["date"].apply(addDash)
 df["date1"] = pd.to_datetime(df["date1"])
 df["week_of_year"] = df["date1"].dt.week
@@ -67,31 +67,26 @@ df["week_of_year"] = df.week_of_year.astype(str)
 df["yearWeek"] = df.year_of_year + "-" + df.week_of_year
 df = df[~((df.title.str.startswith("ح")) & (df.name.str.endswith("ح")))]
 df = df[~(df.name.str.endswith("پذيره"))]
-df = df[~(df.group_name == "زراعت و خدمات وابسته")]
 df = df[~(df.group_name == "صندوق سرمايه گذاري قابل معامله")]
-df["year"] = df.jalaliDate.apply(year)
+df["year"] = round(df.jalaliDate / 10000,0).astype(int)
 df = df.groupby(["group_name", "year"]).filter(lambda x: x.shape[0] >= 2)
 
 
 #%%
-gdf = pd.read_parquet(path + "Stocks_Prices_1399-09-12.parquet")[
-    ["group_id", "group_name"]
-].drop_duplicates()
-mapdict = dict(zip(gdf.group_name, gdf.group_id))
-df["group_id"] = df.group_name.map(mapdict)
-industry = pd.read_csv(path + "indexes_1400-04-09.csv")
-industry["date"] = industry.date.apply(removeSlash)
-industry["date"] = industry.date.apply(addDash)
 
-mlist = ["overall_index", "EWI"]
-industry = industry[~industry.index_id.isin(mlist)]
-industry["index_id"] = industry["index_id"].astype(float)
-industry = industry.set_index(["index_id", "date"])
-mapdict = dict(zip(industry.index, industry["index"]))
-df["industry_index"] = df.set_index(["group_id", "jalaliDate"]).index.map(mapdict)
+industry = pd.read_csv(path + "IndustryIndexes_1400-04-27.csv")
+# industry["date"] = industry.date.apply(removeSlash)
+# industry["date"] = industry.date.apply(addDash)
+
+# mlist = ["overall_index", "EWI"]
+# industry = industry[~industry.index_id.isin(mlist)]
+# industry["index_id"] = industry["index_id"].astype(float)
+industry = industry.set_index(["group_id", "date"])
+mapdict = dict(zip(industry.index, industry["industry_index"]))
+df["industry_index"] = df.set_index(["group_id", "date"]).index.map(mapdict)
 df
 #%%
-df["close_price"] = df["close_price"].astype(float)
+df["close_price_Adjusted"] = df["close_price_Adjusted"].astype(float)
 df["value"] = df["value"].astype(float)
 df["volume"] = df["volume"].astype(float)
 df["quantity"] = df["quantity"].astype(float)
@@ -107,12 +102,14 @@ wdf = wdf[
             "title",
             "stock_id",
             "group_name",
+            "close_price_Adjusted",
             "close_price",
             "value",
             "volume",
             "quantity",
             "group_id",
             "industry_index",
+            "year"
         ]
     ]
 for i in ["value","volume","quantity"]:
@@ -121,8 +118,9 @@ for i in ["value","volume","quantity"]:
     mapdict = dict(zip(tempt.index,tempt[i]))
     wdf[i] = wdf.index.map(mapdict)
 
+wdf = wdf.rename(columns = {"close_price":"close_price_unAdjusted",
+                            "close_price_Adjusted":"close_price"})
 wdf = wdf.reset_index()
-wdf = wdf.drop(wdf[(wdf["name"] == "وقوام") & (wdf["close_price"] == 1000)].index)
 symbols = [
     "سپرده",
     "هما",
@@ -171,7 +169,6 @@ wdf = wdf.drop(
         & (wdf.volume < 1)
     ].index
 )
-wdf["year"] = wdf.jalaliDate.apply(year)
 #%%
 market = pd.read_excel(path + "IRX6XTPI0009.xls").rename(
     columns={"<DTYYYYMMDD>": "date", "<CLOSE>": "market_index"}
@@ -191,7 +188,7 @@ wdf['shrout'] = wdf.set_index(['name','year']).index.map(mapdict)
 #%%
 
 wdf = wdf[~wdf.shrout.isnull()]
-wdf['marketCap'] = wdf.close_price * wdf.shrout
+wdf['marketCap'] = wdf.close_price_unAdjusted * wdf.shrout
 gg = wdf.groupby(['group_name','yearWeek'])
 
 g = gg.get_group(
@@ -330,7 +327,7 @@ def BG(df):
 data = BG(data)
 # data = data[~data.uo.isnull()]
 #%%
-df["year"] = df.jalaliDate.apply(year)
+# df["year"] = df.jalaliDate.apply(year)
 df["close_price"] = df.close_price.astype(float)
 df = df.sort_values(by=["name", "date"])
 df["return"] = df.groupby("name").close_price.pct_change()
@@ -387,7 +384,7 @@ df = df.drop(
 df["Amihud"] = abs(df["return"]) / df.value
 df = df[(df.Amihud < 1e10) & (df.Amihud > -1e10)]
 gg = df.groupby(["name", "year"])
-g = gg.get_group(("شستا", 1399))
+# g = gg.get_group(("شستا", 1399))
 df = df.set_index(["name", "year"])
 df["volatility"] = gg["return"].std()
 df["liquidity"] = gg["Amihud"].mean()
@@ -437,7 +434,9 @@ mlist = data.name.unique()
 mapdict = dict(zip(mlist, range(len(mlist))))
 data["id"] = data.name.map(mapdict)
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\Price Synchronocity\\"
-data[(data.Rsquared < 1)].to_csv(
+data[(abs(data.Rsquared) < 1)].to_csv(
     path + "priceSynchronocity.csv", index=False
 )
+# %%
+data[data.Rsquared>0.99]
 # %%
