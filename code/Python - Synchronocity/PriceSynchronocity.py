@@ -70,11 +70,12 @@ df = df[~(df.name.str.endswith("پذيره"))]
 df = df[~(df.group_name == "صندوق سرمايه گذاري قابل معامله")]
 df["year"] = round(df.jalaliDate / 10000,0).astype(int)
 df = df.groupby(["group_name", "year"]).filter(lambda x: x.shape[0] >= 2)
-
-
+df = df.groupby(["name", "year"]).filter(lambda x: x.shape[0] >= 100)
+df = df[df.volume >0]
 #%%
 
-industry = pd.read_csv(path + "IndustryIndexes_1400-04-27.csv")
+
+industry = pd.read_csv(path + "IndustryIndexes_1400_06_28.csv")
 # industry["date"] = industry.date.apply(removeSlash)
 # industry["date"] = industry.date.apply(addDash)
 
@@ -179,11 +180,12 @@ wdf["date"] = wdf.date.astype(float)
 mapdict = dict(zip(market["date"], market["market_index"]))
 wdf["market_index"] = wdf["date"].map(mapdict)
 # %%
-shrout = pd.read_csv(path + "SymbolShrout-Annual.csv")
-col = "name"
-wdf[col] = wdf[col].apply(lambda x: convert_ar_characters(x))
-mapdict = dict(zip(shrout.set_index(['symbol','year']).index,shrout.shrout))
-wdf['shrout'] = wdf.set_index(['name','year']).index.map(mapdict)
+shrout = pd.read_csv(path + "SymbolShrout_1400_06_28.csv")
+
+shrout['date'] = shrout.date.astype(float)
+#%%
+mapdict = dict(zip(shrout.set_index(['symbol','date']).index,shrout.shrout))
+wdf['shrout'] = wdf.set_index(['name','date']).index.map(mapdict)
 
 #%%
 
@@ -214,15 +216,19 @@ wdf["lagReturn_market"] = wdf.groupby("name")["return_market"].shift()
 
 # %%
 
+
+print(len(wdf))
+wdf = wdf.groupby(["name", "year"]).filter(lambda x: x.shape[0] >= 30)
+print(len(wdf))
+wdf = wdf.groupby(["group_id", "yearWeek"]).filter(lambda x: x.shape[0] >= 3)
+print(len(wdf))
 gg = wdf[(~wdf.market_index.isnull())&
          (~wdf.industry_index.isnull())
          ].groupby(["name", "year"])
-# g = gg.get_group((
-#     "آكنتور",
-#     1387))
+
 #%%
 def rCalculation(g):
-    # print(g.name[0])
+    n = g.name
     if len(g)<30:
         return pd.DataFrame()
     y = "return"
@@ -231,17 +237,30 @@ def rCalculation(g):
     try:
         # Add a constant term like so:
         model = sm.OLS(g[y], sm.add_constant(g[x])).fit()
+        # if model.rsquared >=1:
+        #     print(g.name[0],g.name[1])
+        # if model.rsquared <=-1:
+        #     print(g.name[0],g.name[1])
+        for counter,i in enumerate(model.params):
+            if abs(i)>10:
+                print(n)
+            g[counter] = i
         g['Rsquared'] = model.rsquared
         g['Residual'] = model.resid
         return g
     except:
         return pd.DataFrame()
-
-
 data = gg.apply(rCalculation).reset_index(drop=True)
 
-
+data.describe()
 # %%
+g = gg.get_group(('ارفع', 1395)).describe()
+y = "return"
+x = ["return_market", "lagReturn_market", "return_industry", "lagReturn_industry"]
+g = g.dropna()
+model = sm.OLS(g[y], sm.add_constant(g[x])).fit()
+model.params,model.rsquared
+#%%
 data['Firm_Specific_Return'] = ln(1+ data.Residual)
 gg = data.groupby(["name", "year"])
 g = gg.get_group((
