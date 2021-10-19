@@ -336,17 +336,11 @@ def rCalculation(g):
 data = gg.apply(rCalculation).reset_index(drop=True)
 
 data.describe()
-# %%
-g = gg.get_group(("ارفع", 1395)).describe()
-y = "return"
-x = ["return_market", "lagReturn_market", "return_industry", "lagReturn_industry"]
-g = g.dropna()
-model = sm.OLS(g[y], sm.add_constant(g[x])).fit()
 model.params, model.rsquared
 #%%
 data["Firm_Specific_Return"] = ln(1 + data.Residual)
 gg = data.groupby(["name", "year"])
-g = gg.get_group(("شستا", 1399))
+# g = gg.get_group(("شستا", 1399))
 
 
 def crashCalculater(g, k):

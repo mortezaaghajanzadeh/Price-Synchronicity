@@ -26,9 +26,9 @@ pathS = (
 plt.ylabel("Synchronicity")
 plt.xlabel("Year")
 plt.title("Firms' synchronocity Time Series")
-fig.set_rasterized(True)
-plt.savefig(pathS + "\\SYNCHtimeSeries.eps", rasterized=True, dpi=300)
-plt.savefig(pathS + "\\SYNCHtimeSeries.png", bbox_inches="tight")
+# fig.set_rasterized(True)
+# plt.savefig(pathS + "\\SYNCHtimeSeries.eps", rasterized=True, dpi=300)
+# plt.savefig(pathS + "\\SYNCHtimeSeries.png", bbox_inches="tight")
 #
 # %%
 df["leverage"] = df.Debt / df.BookValue
@@ -45,3 +45,4 @@ mlist = [
 ]
 df[~(df.uo.isnull())][mlist].describe().T
 # %%
+df[mlist].describe().T
