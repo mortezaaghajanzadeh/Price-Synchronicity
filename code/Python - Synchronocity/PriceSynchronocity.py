@@ -55,46 +55,14 @@ def year(row):
     return int(X[0])
 
 
-def conv_gre_to_shamsi_week(x):
-    week = int(x[0:2])
-    return week
-
-
-def conv_gre_to_shamsi_day(x):
-    day = int(x[3:5])
-    return day
-
-
-def conv_gre_to_shamsi_month(x):
-    month = int(x[6:8])
-    return month
-
-
-def conv_gre_to_shamsi_year(x):
-    year = int(x[9:])
-    return year
-
-
-def clean(data):
-
-    data["week"] = data["shamsi"].apply(conv_gre_to_shamsi_week)
-    data["day"] = data["shamsi"].apply(conv_gre_to_shamsi_day)
-    data["month"] = data["shamsi"].apply(conv_gre_to_shamsi_month)
-    data["year"] = data["shamsi"].apply(conv_gre_to_shamsi_year)
-
-
 #%%
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\\"
-
-df = pd.read_parquet(path + "Cleaned_Stock_Prices_1400_06_16.parquet")
+path = r"E:\RA_Aghajanzadeh\Data\\"
+df = pd.read_parquet(path + "Cleaned_Stock_Prices_1400_06_29.parquet")
 df["date1"] = df["date"].apply(addDash)
 df["date1"] = pd.to_datetime(df["date1"])
 df["shamsi"] = df["date1"].apply(JalaliDate)
 
-#%%
-
-from persiantools.jdatetime import JalaliDate, JalaliDateTime
-JalaliDate(1392, 8, 12).strftime("%W")
 #%%
 #Miladi
 print("Miladi")
