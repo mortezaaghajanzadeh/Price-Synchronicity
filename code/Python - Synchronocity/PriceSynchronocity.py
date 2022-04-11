@@ -58,7 +58,7 @@ def year(row):
 #%%
 path = r"G:\Economics\Finance(Prof.Heidari-Aghajanzadeh)\Data\\"
 path = r"E:\RA_Aghajanzadeh\Data\\"
-df = pd.read_parquet(path + "Cleaned_Stock_Prices_1400_06_29.parquet")
+df = pd.read_parquet(path + "Cleaned_Stock_Prices_14001006.parquet")
 df["date1"] = df["date"].apply(addDash)
 df["date1"] = pd.to_datetime(df["date1"])
 df["shamsi"] = df["date1"].apply(JalaliDate)
@@ -108,7 +108,7 @@ df = df[df.volume > 0]
 
 #%%
 
-industry = pd.read_csv(path + "IndustryIndexes_1400_06_28.csv")
+industry = pd.read_csv(path + "IndustryIndexes_1400_10_06.csv")
 # industry["date"] = industry.date.apply(removeSlash)
 # industry["date"] = industry.date.apply(addDash)
 
@@ -209,23 +209,65 @@ wdf = wdf.drop(
     ].index
 )
 #%%
-market = pd.read_excel(path + "IRX6XTPI0009.xls").rename(
-    columns={"<DTYYYYMMDD>": "date", "<CLOSE>": "market_index"}
-)
+import requests
 
-market["date"] = market.date.astype(float)
-wdf["date"] = wdf.date.astype(float)
-mapdict = dict(zip(market["date"], market["market_index"]))
-wdf["market_index"] = wdf["date"].map(mapdict)
+
+def removeSlash(row):
+    X = row.split("/")
+    if len(X[1]) < 2:
+        X[1] = "0" + X[1]
+    if len(X[2]) < 2:
+        X[2] = "0" + X[2]
+
+    return int(X[0]  + X[1]  + X[2])
+
+
+def Overall_index():
+    url = (
+        r"http://www.tsetmc.com/tsev2/chart/data/Index.aspx?i=32097828799138957&t=value"
+    )
+    r = requests.get(url)
+    jalaliDate = []
+    Value = []
+    for i in r.text.split(";"):
+        x = i.split(",")
+        jalaliDate.append(x[0])
+        Value.append(float(x[1]))
+    df = pd.DataFrame(
+        {
+            "jalaliDate": jalaliDate,
+            "Value": Value,
+        },
+        columns=["jalaliDate", "Value"],
+    )
+    df["jalaliDate"] = df.jalaliDate.apply(removeSlash)
+    return df
+
+market =Overall_index().rename(
+    columns={"Value": "market_index"}
+)
+market
+# .rename(
+    # columns={"<DTYYYYMMDD>": "date", "<CLOSE>": "market_index"}
+# )
+
+market["jalaliDate"] = market.jalaliDate.astype(float)
+wdf["jalaliDate"] = wdf.jalaliDate.astype(float)
+mapdict = dict(zip(market["jalaliDate"], market["market_index"]))
+wdf["market_index"] = wdf["jalaliDate"].map(mapdict)
 # %%
-shrout = pd.read_csv(path + "SymbolShrout_1400_06_28.csv")
+shrout = pd.read_csv(path + "SymbolShrout_1400_10_06.csv").rename(
+    columns = {"name":'symbol'}
+)
 
 shrout["date"] = shrout.date.astype(float)
 mapdict = dict(zip(shrout.set_index(["symbol", "date"]).index, shrout.shrout))
 wdf["shrout"] = wdf.set_index(["name", "date"]).index.map(mapdict)
 
 #%%
+wdf[wdf.name == 'خودرو'].sort_values(by=['date'])
 
+#%%
 wdf = wdf[~wdf.shrout.isnull()]
 wdf["marketCap"] = wdf.close_price_unAdjusted * wdf.shrout
 gg = wdf.groupby(["group_name", "yearWeek"])
